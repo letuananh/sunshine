@@ -36,7 +36,7 @@ with open('requirements.txt', 'r') as infile:
 
 
 setup(
-    name='sunshine',  # package file name (<package-name>-version.tar.gz)
+    name='django-sunshine',  # package file name (<package-name>-version.tar.gz)
     version=pkg_info['__version__'],
     url=pkg_info['__url__'],
     project_urls={
