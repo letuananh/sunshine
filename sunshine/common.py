@@ -13,9 +13,13 @@ from collections.abc import Sequence, Mapping
 from django.conf import settings
 from django.utils.timezone import make_aware
 from django.http import HttpResponse
-from django.contrib.admin.models import LogEntry
-from django.contrib.admin.models import ADDITION, DELETION, CHANGE
-from django.contrib.contenttypes.models import ContentType
+try:
+    from django.contrib.admin.models import LogEntry
+    from django.contrib.admin.models import ADDITION, DELETION, CHANGE
+    from django.contrib.contenttypes.models import ContentType
+    _ADMIN_MODEL_AVAILABLE = True
+except Exception:
+    _ADMIN_MODEL_AVAILABLE = False
 from django.apps import apps
 from django.urls import include, path
 
@@ -33,12 +37,13 @@ def read_settings(key, default_value=''):
 
 
 def log_action(request, instance, **kwargs):
-    LogEntry.objects.log_action(
-        user_id=request.user.id,
-        content_type_id=ContentType.objects.get_for_model(instance).pk,
-        object_id=instance.id,
-        object_repr=repr(instance),
-        **kwargs)
+    if _ADMIN_MODEL_AVAILABLE:
+        LogEntry.objects.log_action(
+            user_id=request.user.id,
+            content_type_id=ContentType.objects.get_for_model(instance).pk,
+            object_id=instance.id,
+            object_repr=repr(instance),
+            **kwargs)
 
 
 def log_add(request, instance, **kwargs):

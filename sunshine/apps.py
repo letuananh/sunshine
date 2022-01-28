@@ -17,17 +17,24 @@ def is_developer(user):
          )
 
 
+def is_developer_request(req):
+    try:
+        return is_developer(req.user)
+    except Exception:
+        return False
+
+
 class SunshinePortalConfig(AppConfig):
     name = 'sunshine'
     verbose_name = 'Sunshine Portal'
     sunshine_menu = [
         {'title': 'System Dashboard',
          'name': 'system_dashboard',
-         'verify': lambda req: is_developer(req.user),
+         'verify': is_developer_request,
          'groups': ['Developer']
          },
         {'name': 'admin:index',
-         'verify': lambda req: is_developer(req.user),
+         'verify': is_developer_request,
          'title': 'Django Admin',
          'icon': 'fa-tools',
          'groups': ['Developer']}

@@ -38,7 +38,7 @@ LOGIN_URL = getattr(settings, 'LOGIN_URL', '/login')
 
 def index(request):
     ''' Default entry point for the public '''
-    if request.user.is_authenticated and SUNSHINE_HOME:
+    if hasattr(request, 'user') and request.user.is_authenticated and SUNSHINE_HOME:
         return redirect(SUNSHINE_HOME)
     else:
         context = {'title': SUNSHINE_TITLE,

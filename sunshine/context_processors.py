@@ -6,6 +6,7 @@
 
 from django.conf import settings
 from .apps import is_developer
+from .apps import is_developer_request
 from .common import read_settings, build_menu
 
 
@@ -31,7 +32,9 @@ COPYRIGHT_FOOTER = read_settings(
 
 def username(request):
     ''' Get current user's login account name '''
-    if request.user.is_authenticated:
+    if not hasattr(request, 'user'):
+        username = 'Anonymous'
+    elif request.user.is_authenticated:
         # try to user fullname first ...
         username = "{} {}".format(request.user.first_name, request.user.last_name).strip()
         if not username:
@@ -43,6 +46,7 @@ def username(request):
 
 def setup_sunshine_request(request):
     menu = build_menu(request)
+    sidebar_toggle = request.session.get('sidebar_toggle', True) if hasattr(request, 'session') else True
     return {
         # sunshine site configuration
         'SUNSHINE_BRAND': SUNSHINE_BRAND,
@@ -55,6 +59,6 @@ def setup_sunshine_request(request):
         'sunshine_main_menu': menu,
         # user related info
         'username': username(request),
-        'access_dev': is_developer(request.user),
-        'sidebar_toggle': request.session.get('sidebar_toggle', True)
+        'access_dev': is_developer_request(request),
+        'sidebar_toggle': sidebar_toggle
     }
